@@ -1,11 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView } from "react-native";
+import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, Dimensions, TouchableOpacity, Alert  } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "./config/constants";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
+import Carousel from "react-native-reanimated-carousel";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -33,22 +34,35 @@ export default function App() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    
       <SafeAreaView>
         <StatusBar style="auto" />
         <ScrollView>
-          <View style={styles.banners}>
-            {banners.map((banner, index) => {
-              console.log(banner.imageUrl);
-              return <Image key={banner.id} source={{ uri: `${API_URL}/${banner.imageUrl}` }} style={styles.bannerImage} />;
-            })}
-          </View>
+        <View style={styles.container}>
+        <TouchableOpacity
+            onPress={() => {
+              Alert.alert("배너클릭");
+            }}
+          >
+            <Carousel
+              width={Dimensions.get("window").width}
+              height={300}
+              autoPlay={true}
+              sliderWidth={Dimensions.get("window").width}
+              itemWidth={Dimensions.get("window").width}
+              itemHeight={300}
+              data={banners}
+              renderItem={(banner) => {
+                return <Image source={{ uri: `${API_URL}/${banner.item.imageUrl}` }} style={styles.bannerImage} />;
+              }}
+            />
+          </TouchableOpacity>
 
           <Text>Products</Text>
           <View style={styles.productWrap}>
             {products &&
               products.map((product, index) => {
-                
+                console.log(product);
                 return (
                   <View style={styles.productCard} key={product.id}>
                     {product.soldout === 1 && <View style={styles.productBlur} />}
@@ -70,9 +84,10 @@ export default function App() {
                 );
               })}
           </View>
+          </View>
         </ScrollView>
       </SafeAreaView>
-    </View>
+   
   );
 }
 
@@ -83,6 +98,9 @@ const styles = StyleSheet.create({
   },
   productWrap: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    height:500,
+    justifyContent: "center",
   },
   productCard: {
     width: 320,
@@ -90,6 +108,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 16,
     backgroundColor: "#fff",
+    margin: 20,
   },
   productImage: {
     width: "100%",
@@ -146,6 +165,8 @@ const styles = StyleSheet.create({
   banners: {
     width: "100%",
     position: "relative",
-    height: 300,
+    height: 700,
+   
   },
+ 
 });
