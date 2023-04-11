@@ -3,27 +3,16 @@ import { API_URL } from "../config/constants";
 import axios from "axios";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Image, ScrollView, Dimensions, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, Dimensions, TouchableOpacity, Alert } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
-
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
 dayjs.locale("ko");
-
 dayjs.extend(relativeTime);
 
 export default function Main(props) {
   const [products, setProducts] = useState([]);
   const [banners, setBanners] = useState([]);
-  const PAGE_WIDTH = Dimensions.get("window").width;
-  const baseOptions = {
-    width: PAGE_WIDTH / 1,
-    height: 200,
-    style: {
-      width: PAGE_WIDTH,
-      height: 200,
-    },
-  };
   useEffect(() => {
     axios
       .get(`${API_URL}/products/`)
@@ -42,6 +31,7 @@ export default function Main(props) {
         console.error(error);
       });
   }, []);
+
   return (
     <View>
       <StatusBar style="auto" />
@@ -53,49 +43,52 @@ export default function Main(props) {
             }}
           >
             <Carousel
-              {...baseOptions}
+              width={Dimensions.get("window").width}
+              height={300}
               autoPlay={true}
+              sliderWidth={Dimensions.get("window").width}
+              itemWidth={Dimensions.get("window").width}
+              itemHeight={300}
               data={banners}
               renderItem={(banner) => {
-                return (
-                  <View style={{ flex: 1 }}>
-                    <Image source={{ uri: `${API_URL}/${banner.item.imageUrl}` }} style={{ width: "100%", height: "100%", resizeMode: "cover" }} />
-                  </View>
-                );
+                return <Image source={{ uri: `${API_URL}/${banner.item.imageUrl}` }} style={styles.bannerImage} />;
               }}
             />
           </TouchableOpacity>
 
-          <Text>Products</Text>
-          {products &&
-            products.map((product, index) => {
-              return (
-                <TouchableOpacity
-                  key={product.id}
-                  onPress={() => {
-                    props.navigation.navigate("Product", { id: product.id });
-                  }}
-                >
-                  <View style={styles.productCard}>
-                    {product.soldout === 1 && <View style={styles.productBlur} />}
-                    <View>
-                      <Image source={{ uri: `${API_URL}/${product.imageUrl}` }} style={styles.productImage} resizeMode={"contain"} />
-                    </View>
-                    <View style={styles.productContent}>
-                      <Text style={styles.productName}>{product.name}</Text>
-                      <Text style={styles.productPrice}>{product.price}원</Text>
-                    </View>
-                    <View style={styles.productFooter}>
-                      <View style={styles.productSeller}>
-                        <Image source={{ uri: `https://cdn-icons-png.flaticon.com/512/10277/10277946.png` }} style={styles.productAvatar} />
-                        <Text style={styles.productSellerName}>{product.seller}</Text>
+          <Text style={styles.productTitle}>Products</Text>
+          <View style={styles.productWrap}>
+            {products &&
+              products.map((product, index) => {
+                return (
+                  <TouchableOpacity
+                    key={product.id}
+                    onPress={() => {
+                      props.navigation.navigate("Product", { id: product.id });
+                    }}
+                  >
+                    <View style={styles.productCard}>
+                      {product.soldout === 1 && <View style={styles.productBlur} />}
+
+                      <View>
+                        <Image source={{ uri: `${API_URL}/${product.imageUrl}` }} style={styles.productImage} resizeMode={"contain"} />
                       </View>
-                      <Text style={styles.productDate}>{dayjs(product.createdAt).fromNow()}</Text>
+                      <View style={styles.productContent}>
+                        <Text style={styles.productName}>{product.name}</Text>
+                        <Text style={styles.productPrice}>{product.price}원</Text>
+                      </View>
+                      <View style={styles.productFooter}>
+                        <View style={styles.productSeller}>
+                          <Image source={{ uri: `https://cdn-icons-png.flaticon.com/512/2163/2163350.png` }} style={styles.productAvatar} />
+                          <Text style={styles.productSellerName}>4NITURE</Text>
+                        </View>
+                        <Text style={styles.productCategory}>{product.category}</Text>
+                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
+                  </TouchableOpacity>
+                );
+              })}
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -106,7 +99,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f0f0f0",
-    position: "relative",
+  },
+  productTitle: {
+    fontSize: 24,
+    paddingLeft: 50,
+    paddingTop: 30,
+  },
+  productWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    height: 500,
+    justifyContent: "center",
   },
   productCard: {
     width: 320,
@@ -114,6 +117,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 16,
     backgroundColor: "#fff",
+    margin: 20,
   },
   productImage: {
     width: "100%",
@@ -138,18 +142,25 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   productName: {
-    fontSize: 16,
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingLeft: 5,
   },
   productPrice: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "400",
     marginTop: 8,
+    paddingLeft: 5,
   },
   productSellerName: {
-    fontSize: 16,
+    fontSize: 12,
+    marginLeft: 5,
+    fontWeight: "bold",
   },
-  productDate: {
-    fontSize: 16,
+  productCategory: {
+    fontSize: 12,
+    marginRight: 5,
+    fontWeight: "bold",
   },
   productBlur: {
     position: "absolute",
@@ -159,5 +170,15 @@ const styles = StyleSheet.create({
     left: 0,
     backgroundColor: "#ffffffaa",
     zIndex: 999,
+  },
+  bannerImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  banners: {
+    width: "100%",
+    position: "relative",
+    height: 700,
   },
 });
