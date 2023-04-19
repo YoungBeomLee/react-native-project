@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Main from "./screen/Main";
 import Product from "./screen/Product";
+import Review from "./screen/Review";
 
 const Stack = createNativeStackNavigator();
 
@@ -19,7 +20,9 @@ export default function App() {
               headerTitle: () => <Image source={require("./assets/logo.png")} style={{ width: 100, height: 30, resizeMode: "contain" }} />,
             }}
           />
+
           <Stack.Screen name="Product" component={Product} options={{ title: "상품상세화면" }} />
+          <Stack.Screen name="Review" component={Review} options={{ title: "리뷰" }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

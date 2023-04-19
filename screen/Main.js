@@ -86,6 +86,15 @@ export default function Main(props) {
               })}
           </View>
         </View>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate("Review");
+          }}
+        >
+          <View>
+            <Text style={styles.reviewTab}>Review</Text>
+          </View>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -176,4 +185,9 @@ const styles = StyleSheet.create({
     position: "relative",
     height: 700,
   },
+  reviewTab:{
+		fontSize:20,
+		backgroundColor:"#F25A29",
+		color:"#eee"
+	},
 });
