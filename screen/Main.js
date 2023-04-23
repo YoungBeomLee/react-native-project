@@ -9,6 +9,7 @@ import Carousel from "react-native-reanimated-carousel";
 export default function Main(props) {
   const [products, setProducts] = useState([]);
   const [banners, setBanners] = useState([]);
+  
   useEffect(() => {
     axios
       .get(`${API_URL}/products/`)
@@ -64,9 +65,8 @@ export default function Main(props) {
                     }}
                   >
                     <View style={styles.productCard}>
-                      {product.soldout === 1 && <View style={styles.productBlur} />}
-
-                      <View>
+										{product.soldout === 1 && <View style={styles.productBlur}><Text style={styles.soldoutText}>품절</Text></View>}
+										<View>
                         <Image source={{ uri: `${API_URL}/${product.imageUrl}` }} style={styles.productImage} resizeMode={"contain"} />
                       </View>
                       <View style={styles.productContent}>
@@ -185,6 +185,11 @@ const styles = StyleSheet.create({
     position: "relative",
     height: 700,
   },
+  soldoutText :{
+		textAlign:"center",
+		fontSize:20,
+		lineHeight:380,
+	},
   reviewTab:{
 		fontSize:20,
 		backgroundColor:"#F25A29",

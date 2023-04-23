@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Image, ScrollView, Dimensions, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { API_URL } from "../config/constants";
 import axios from "axios";
-import dayjs from "dayjs";
-import { color } from "react-native-reanimated";
+//import dayjs from "dayjs";
+//import { color } from "react-native-reanimated";
 
 const Product = (props) => {
   const { id } = props.route.params;
@@ -19,13 +19,20 @@ const Product = (props) => {
       });
   }, []);
   if (!product) {
-    return <ActivityIndicator />;
+    return <ActivityIndicator />; //경로가 틀렸을때 스피너가 돈다.
   }
   const onPressButton = () => {
+    axios
+      .post(`${API_URL}/purchase/${id}`)
+      .then((result) => {
+        message.info("결제가 완료 되었습니다");
+        getProduct();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     if (product.soldout !== 1) {
-      Alert.alert("구매가 완료되었습니다");
-    } else {
-      Alert.alert("품절된 상품입니다");
+      Alert.alert("구매가 완료되었습니다.");
     }
   };
   return (
@@ -46,8 +53,8 @@ const Product = (props) => {
         </View>
       </ScrollView>
       <TouchableOpacity onPress={onPressButton}>
-        <View style={styles.purchaseButton}>
-          <Text style={styles.purchaseText}>구매하기</Text>
+        <View style={product.soldout === 1 ? styles.purchaseDisabled : styles.purchaseButton}>
+          <Text style={styles.purchaseText}>{product.soldout === 1 ? "품절" : "구매하기"}</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -102,6 +109,16 @@ const styles = StyleSheet.create({
   purchaseText: {
     color: "white",
     fontSize: 24,
+  },
+  purchaseDisabled: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "gray",
+    height: 60,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
