@@ -9,7 +9,14 @@ import Carousel from "react-native-reanimated-carousel";
 export default function Main(props) {
   const [products, setProducts] = useState([]);
   const [banners, setBanners] = useState([]);
-  
+  const PAGE_WIDTH = Dimensions.get("window").width;
+  const baseOptions = {
+    width: PAGE_WIDTH / 4,
+    height: 200,
+    style: {
+      width: PAGE_WIDTH,
+    },
+  };
   useEffect(() => {
     axios
       .get(`${API_URL}/products/`)
@@ -40,13 +47,11 @@ export default function Main(props) {
             }}
           >
             <Carousel
-              width={Dimensions.get("window").width}
-              height={300}
+              {...baseOptions}
               autoPlay={true}
-              sliderWidth={Dimensions.get("window").width}
-              itemWidth={Dimensions.get("window").width}
-              itemHeight={300}
               data={banners}
+              width={Dimensions.get("window").width}
+              height={180}
               renderItem={(banner) => {
                 return <Image source={{ uri: `${API_URL}/${banner.item.imageUrl}` }} style={styles.bannerImage} />;
               }}
@@ -65,8 +70,12 @@ export default function Main(props) {
                     }}
                   >
                     <View style={styles.productCard}>
-										{product.soldout === 1 && <View style={styles.productBlur}><Text style={styles.soldoutText}>품절</Text></View>}
-										<View>
+                      {product.soldout === 1 && (
+                        <View style={styles.productBlur}>
+                          <Text style={styles.soldoutText}>품절</Text>
+                        </View>
+                      )}
+                      <View>
                         <Image source={{ uri: `${API_URL}/${product.imageUrl}` }} style={styles.productImage} resizeMode={"contain"} />
                       </View>
                       <View style={styles.productContent}>
@@ -178,21 +187,21 @@ const styles = StyleSheet.create({
   bannerImage: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
+    resizeMode: "contain",
   },
   banners: {
     width: "100%",
     position: "relative",
     height: 700,
   },
-  soldoutText :{
-		textAlign:"center",
-		fontSize:20,
-		lineHeight:380,
-	},
-  reviewTab:{
-		fontSize:20,
-		backgroundColor:"#F25A29",
-		color:"#eee"
-	},
+  soldoutText: {
+    textAlign: "center",
+    fontSize: 20,
+    lineHeight: 380,
+  },
+  reviewTab: {
+    fontSize: 20,
+    backgroundColor: "#F25A29",
+    color: "#eee",
+  },
 });
